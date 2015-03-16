@@ -2,25 +2,30 @@ package com.FCI.SWE.Models;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 //import com.google.appengine.repackaged.com.google.api.services.datastore.DatastoreV1.DatastoreService;
-
+//import com.google.appengine.repackaged.com.google.api.services.datastore.DatastoreV1.DatastoreService;
+import java.util.List;
 
 public class FriendRequestEntity {
 	private String email1;
 	private String email2;
 	private String status;
-	public void FriendReqEntity(String email1, String email2,String status) {
+	public FriendRequestEntity(String email1, String email2,String status) {
 		this.email1=email1;
 		this.email2=email2;
 		
 		this.status=status;
 	}
-	public void FriendReqEntity() {
+	
+	
+	public FriendRequestEntity() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
+
 	public String getEmail1() {
 		return email1;
 	}public String getEmail2() {
@@ -39,26 +44,25 @@ public String getStatus() {
 }
 	
 	public Boolean saveRequest() {
-		DatastoreService datastore = DatastoreServiceFactory
+		com.google.appengine.api.datastore.DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Query gaeQuery = new Query("requests");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
-		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+		List list = (List) pq.asList(FetchOptions.Builder.withDefaults());
 
 		Entity request = new Entity("requests", list.size() + 1);
 
 		request.setProperty("email1", this.email1);
 		request.setProperty("email2", this.email2);
 		request.setProperty("status",this.status);
-		if(datastore.put(request).isComplete())
+		datastore.put(request);
 			return true;
-		else return false;
 
 	}
 
 	
 public static String getUsers(String email2) {
-		DatastoreService datastore = DatastoreServiceFactory
+		com.google.appengine.api.datastore.DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
 		Query gaeQuery = new Query("requests");
@@ -76,7 +80,7 @@ public static String getUsers(String email2) {
 }
 
 public static String getUsers2(String email) {
-	DatastoreService datastore = DatastoreServiceFactory
+	com.google.appengine.api.datastore.DatastoreService datastore = DatastoreServiceFactory
 			.getDatastoreService();
 
 	Query gaeQuery = new Query("requests");
@@ -94,7 +98,7 @@ public static String getUsers2(String email) {
 	
 }
 public static void accept(String email1,String email2){
-	DatastoreService datastore = DatastoreServiceFactory
+	com.google.appengine.api.datastore.DatastoreService datastore = DatastoreServiceFactory
 			.getDatastoreService();
 	Query gaeQuery = new Query("requests");
 	PreparedQuery pq = datastore.prepare(gaeQuery);
@@ -103,6 +107,7 @@ public static void accept(String email1,String email2){
 				&& entity.getProperty("email1").toString().equals(email2))
 		{
 			entity.setProperty("status", "Accepted");
+			datastore.put(entity);
 		return;
 		}
 

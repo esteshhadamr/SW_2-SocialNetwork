@@ -2,6 +2,7 @@ package com.FCI.SWE.Models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,8 +27,8 @@ import com.google.appengine.api.datastore.Query;
  * @since 2014-02-12
  */
 public class UserEntity {
-	private String name;
-	private String email;
+	public String name;
+	public String email;
 	private String password;
 
 	/**
@@ -45,6 +46,25 @@ public class UserEntity {
 		this.email = email;
 		this.password = password;
 
+	}
+
+	public UserEntity(String name, String email) {
+		this.name = name;
+		this.email = email;
+	}
+
+	public UserEntity() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	public void setEmail(String Email)
+	{
+		this.email = email;
 	}
 
 	public String getName() {
@@ -81,6 +101,20 @@ public class UserEntity {
 		}
 		return null;
 
+	}
+	public static UserEntity parseUserInfo(String json)
+	{
+		JSONParser parser = new JSONParser();
+		try{
+		JSONObject object = (JSONObject) parser.parse(json);
+		UserEntity user = new UserEntity();
+		user.setName(object.get("name").toString());
+		user.setEmail(object.get("email").toString());
+		return user;
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -153,5 +187,25 @@ public class UserEntity {
 					 }
 					 }return false;
 	}
-
+	public static Vector<UserEntity> searchUser(String uname)
+	{
+		DatastoreService dataStore = DatastoreServiceFactory
+				.getDatastoreService();
+		Query gae = new Query("users");
+		PreparedQuery prepareQuery = dataStore.prepare(gae);
+		Vector<UserEntity> returnedUsers = new Vector<UserEntity>();
+		for(Entity entity : prepareQuery.asIterable())
+		{
+			entity.getKey().getId();
+			String currentName = entity.getProperty("name").toString();
+			if(currentName.contains(uname))
+			{
+				UserEntity user = new UserEntity(entity.getProperty("name").toString(),entity.getProperty("email").toString());
+				returnedUsers.add(user);
+			}
+		}
+		return returnedUsers;
+	}
 }
+
+

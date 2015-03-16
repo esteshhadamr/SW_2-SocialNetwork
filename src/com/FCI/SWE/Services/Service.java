@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.mvc.Viewable;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -38,7 +40,7 @@ import com.FCI.SWE.Models.UserEntity;
  *
  */
 @Path("/")
-@Produces("text/html")
+@Produces(MediaType .TEXT_PLAIN)
 public class Service {
 	
 	
@@ -111,10 +113,10 @@ public class Service {
 
 		} else {
 			
-			FriendRequestEntity request =new FriendRequestEntity(email1, email2,"pinding");
+			FriendRequestEntity request =new FriendRequestEntity(email1,email2,"unaccepted");
 			request.saveRequest();
 			object.put("Status", "OK");
-			return object.toString();
+			
 		}
 		return object.toString();
 
@@ -143,7 +145,7 @@ public class Service {
 	public String acceptFriendService(@FormParam("email1") String email1,@FormParam("email2") String email2)
 	{
 		JSONObject object = new JSONObject();
-		FriendReqEntity F=new FriendRequestEntity();
+		FriendRequestEntity F=new FriendRequestEntity();
 		String  Email1 = F.getUsers2(email1);
 		String  Email2 = F.getUsers2(email2);
 
@@ -153,11 +155,31 @@ public class Service {
 		} else {
 
 			F.accept(Email1, Email2);
-			object.put("Status", "done");
+			object.put("Status", "OK");
 
 		}
 			
 		return object.toJSONString();
+	}
+	
+	@POST
+	@Path("/SearchService")
+	public String SearchService(@FormParam("name") String name)
+	{
+		Vector<UserEntity> users = UserEntity.searchUser(name);
+		JSONArray returnedJson = new JSONArray();
+		for(UserEntity user : users)
+		{
+			JSONObject object = new JSONObject();
+			object.put("name", user.getName());
+			object.put("email", user.getEmail());
+			
+			returnedJson.add(object);
+		}
+		
+		return returnedJson.toString();
+
+	
 	}
 	
 
