@@ -28,6 +28,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.FCI.SWE.Models.FriendRequestEntity;
+import com.FCI.SWE.Models.SendMessage;
 import com.FCI.SWE.Models.UserEntity;
 
 /**
@@ -180,6 +181,28 @@ public class Service {
 		return returnedJson.toString();
 
 	
+	}
+	@POST
+	@Path("/sendMessageService")
+	public String sendMessageService(@FormParam("email1") String email1,
+			@FormParam("email2") String email2,@FormParam("text") String text) {
+		JSONObject object = new JSONObject();
+		boolean  Email1 = UserEntity.getUsers(email1);
+		boolean  Email2 = UserEntity.getUsers(email2);
+		boolean  Message = UserEntity.getUsers(text);
+		
+		if (Email1 == false || Email2==false) {
+			object.put("Status", "Failed");
+
+		} else {
+			
+			SendMessage request =new SendMessage(email1,email2,text,"unaccepted");
+			request.saveMessage();
+			object.put("Status", "OK");
+			
+		}
+		return object.toString();
+
 	}
 	
 

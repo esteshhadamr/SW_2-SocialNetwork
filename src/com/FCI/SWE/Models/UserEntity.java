@@ -30,7 +30,8 @@ public class UserEntity {
 	public String name;
 	public String email;
 	private String password;
-
+    private long id;
+    private static UserEntity currentActiveUser;  
 	/**
 	 * Constructor accepts user data
 	 * 
@@ -41,25 +42,29 @@ public class UserEntity {
 	 * @param password
 	 *            user provided password
 	 */
-	public UserEntity(String name, String email, String password) {
+	
+	public UserEntity(String name, String email,String passward) {
 		this.name = name;
 		this.email = email;
-		this.password = password;
-
-	}
-
-	public UserEntity(String name, String email) {
-		this.name = name;
-		this.email = email;
+		this.password=passward;
 	}
 
 	public UserEntity() {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public UserEntity(String name, String email) {
+		this.name=name;
+		this.email=email;
+	}
+
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+	public void setId(long id)
+	{
+		this.id = id;
 	}
 	
 	public void setEmail(String Email)
@@ -75,6 +80,9 @@ public class UserEntity {
 		return email;
 	}
 
+	public long getId() {
+		return id;
+	}
 	public String getPass() {
 		return password;
 	}
@@ -93,8 +101,10 @@ public class UserEntity {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject object = (JSONObject) parser.parse(json);
-			return new UserEntity(object.get("name").toString(), object.get(
-					"email").toString(), object.get("password").toString());
+			currentActiveUser =new UserEntity(object.get("name").toString(), object.get(
+					"email").toString(), object.get("id").toString());
+			currentActiveUser.setId(Long.parseLong(object.get("id").toString()));
+			return currentActiveUser;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -145,6 +155,27 @@ public class UserEntity {
 				return returnedUser;
 			}
 		}
+		return null;
+		}
+		
+		
+		
+		public static UserEntity getuser(String name) {
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+
+			Query gaeQuery = new Query("users");
+			PreparedQuery pq = datastore.prepare(gaeQuery);
+			for (Entity entity : pq.asIterable()) {
+				System.out.println(entity.getProperty("name").toString());
+				if (entity.getProperty("name").toString().equals(name)) {
+					UserEntity returnedUser = new UserEntity(entity.getProperty(
+							"name").toString(), entity.getProperty("email")
+							.toString());
+					return returnedUser;
+				}
+			}
+
 
 		return null;
 	}
@@ -206,6 +237,8 @@ public class UserEntity {
 		}
 		return returnedUsers;
 	}
+	
+	
 }
 
 

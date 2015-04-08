@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -12,5 +13,7 @@
 <a href="/social/Addfriend/">Add friend</a><br>
 <a href="/social/AcceptFriend/">Accept friend</a><br>
 <a href="/social/search/">search </a>
+<a href="/social/SendMessage/">send message </a>
+ <a href="/social/Conversation">conversation chat</a> <br>
 </body>
 </html>
